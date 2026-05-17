@@ -4,13 +4,13 @@ from interfaz import Interfaz
 
 def main():
     print("INICIANDO ENTORNO PAC-MAN")
-    
     mi_laberinto = Laberinto('mapas/mapa_facil.txt')
-    mi_laberinto.mostrar_consola()
-    
-    print("\nMapa cargado en memoria:")
-    mi_laberinto.mostrar_consola()
     app = Interfaz(mi_laberinto)
+    app.dibujar()
+    app.reproducir_inicio()
+    
+    # Aquí van los algoritmos de búsqueda
+
     app.mantener_abierta()
 
 if __name__ == "__main__":
