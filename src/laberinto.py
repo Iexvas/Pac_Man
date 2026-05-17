@@ -40,17 +40,17 @@ class Laberinto:
         """
         sucesores = []
         
-        # Movimientos posibles: (dx, dy) -> Arriba, Abajo, Izquierda, Derecha
+        # Movimientos posibles: Arriba, Abajo, Izquierda, Derecha
         movimientos = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         
         for dx, dy in movimientos:
             nx, ny = x + dx, y + dy
             
-            # 1. Validar que no nos salgamos de los bordes de la matriz
+            # Validar que no nos salgamos de los bordes de la matriz
             if 0 <= nx < len(self.matriz[0]) and 0 <= ny < len(self.matriz):
                 valor_celda = self.matriz[ny][nx]
                 
-                # 2. Validar que no sea un muro ('1')
+                # Validar que no sea un muro ('1')
                 if valor_celda != '1':
                     # 3. Calcular el costo
                     # Si es fantasma ('2'), cuesta 10. Si es camino ('0', 'P', 'M'), cuesta 1.
