@@ -1,6 +1,7 @@
 # src/main.py
 from laberinto import Laberinto
 from interfaz import Interfaz
+from busqueda_ciega import bfs, dfs, ucs, imprimir_metricas
 
 def main():
     print("INICIANDO ENTORNO PAC-MAN")
