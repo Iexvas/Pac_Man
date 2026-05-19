@@ -167,9 +167,8 @@ def ucs(laberinto):
                                     "costo_total": float('inf')}
 
 
-# ---------------------------------------------------------------------------
 # Función auxiliar
-# ---------------------------------------------------------------------------
+
 
 def _calcular_costo(laberinto, camino):
     """Suma el costo real de recorrer el camino dado."""
