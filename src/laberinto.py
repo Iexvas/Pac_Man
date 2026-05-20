@@ -50,11 +50,12 @@ class Laberinto:
             if 0 <= nx < len(self.matriz[0]) and 0 <= ny < len(self.matriz):
                 valor_celda = self.matriz[ny][nx]
                 
-                # Validar que no sea un muro ('1')
-                if valor_celda != '1':
-                    # 3. Calcular el costo
-                    # Si es fantasma ('2'), cuesta 10. Si es camino ('0', 'P', 'M'), cuesta 1.
-                    costo = 10 if valor_celda == '2' else 1
+                # Validar que no sea un muro ('1') ni un fantasma ('2')
+                if valor_celda not in ['1', '2']:
+                    
+                    # Si la casilla es terreno pesado ('3'), el costo es alto (10).
+                    # Si es espacio libre ('0', 'P', 'M'), el costo es normal (1).
+                    costo = 10 if valor_celda == '3' else 1 
                     
                     sucesores.append(((nx, ny), costo))
                     

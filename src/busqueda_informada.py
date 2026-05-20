@@ -71,13 +71,20 @@ def gbfs(laberinto):
     frontera = [(heuristica_manhattan(inicio, meta), contador, inicio, [inicio])]
     heapq.heapify(frontera)
     
-    visitados = {inicio}
+    visitados = set() # Iniciamos vacío
     nodos_generados = 1
     nodos_expandidos = 0
     orden_exploracion = []
 
     while frontera:
         h, _, nodo_actual, camino = heapq.heappop(frontera)
+        
+        # CORRECCIÓN: Si ya lo visitamos, lo ignoramos para evitar ciclos
+        if nodo_actual in visitados:
+            continue
+            
+        # Lo marcamos como visitado al EXPANDIRLO, no al generarlo
+        visitados.add(nodo_actual)
         nodos_expandidos += 1
         orden_exploracion.append(nodo_actual)
 
@@ -92,7 +99,6 @@ def gbfs(laberinto):
 
         for (nx, ny), _ in laberinto.get_sucesores(*nodo_actual):
             if (nx, ny) not in visitados:
-                visitados.add((nx, ny))
                 nodos_generados += 1
                 contador += 1
                 h_n = heuristica_manhattan((nx, ny), meta)

@@ -10,11 +10,6 @@ def bfs(laberinto):
     Búsqueda en Anchura (Breadth-First Search).
     Explora nivel por nivel. Garantiza el camino con MENOS PASOS,
     pero no necesariamente el de menor costo (ignora costos de fantasmas).
-
-    Retorna:
-        ruta        : lista de (x, y) desde inicio hasta meta
-        explorados  : lista de (x, y) en orden de visita (para visualizar)
-        metricas    : dict con nodos_generados, nodos_expandidos, costo_total
     """
     inicio = laberinto.inicio
     meta   = laberinto.meta
@@ -26,12 +21,14 @@ def bfs(laberinto):
     visitados = set()
     visitados.add(inicio)
 
-    nodos_generados  = 1   # el nodo inicial ya se genera
+    nodos_generados  = 1   
     nodos_expandidos = 0
+    orden_exploracion = [] # NUEVO: Para guardar el orden exacto
 
     while frontera:
         nodo_actual, camino = frontera.popleft()
         nodos_expandidos += 1
+        orden_exploracion.append(nodo_actual)
 
         if nodo_actual == meta:
             # Calcular costo real del camino (respetando costos de fantasmas)
@@ -41,7 +38,7 @@ def bfs(laberinto):
                 "nodos_expandidos": nodos_expandidos,
                 "costo_total":      costo_total,
             }
-            return camino, list(visitados), metricas
+            return camino, orden_exploracion, metricas
 
         # Expandir sucesores
         for (nx, ny), _ in laberinto.get_sucesores(*nodo_actual):
@@ -51,7 +48,7 @@ def bfs(laberinto):
                 frontera.append(((nx, ny), camino + [(nx, ny)]))
 
     # Sin solución
-    return [], list(visitados), {"nodos_generados": nodos_generados,
+    return [], orden_exploracion, {"nodos_generados": nodos_generados,
                                   "nodos_expandidos": nodos_expandidos,
                                   "costo_total": float('inf')}
 
@@ -61,11 +58,6 @@ def dfs(laberinto):
     Búsqueda en Profundidad (Depth-First Search).
     Explora un camino hasta el fondo antes de retroceder.
     NO garantiza la ruta óptima ni en pasos ni en costo.
-
-    Retorna:
-        ruta        : lista de (x, y) desde inicio hasta meta
-        explorados  : lista de (x, y) en orden de visita
-        metricas    : dict con nodos_generados, nodos_expandidos, costo_total
     """
     inicio = laberinto.inicio
     meta   = laberinto.meta
@@ -110,25 +102,15 @@ def ucs(laberinto):
     """
     Búsqueda de Costo Uniforme (Uniform Cost Search).
     Expande siempre el nodo de MENOR COSTO ACUMULADO.
-    Garantiza la ruta ÓPTIMA considerando que los fantasmas ('2') cuestan 10
-    y las celdas normales cuestan 1.
-
-    Frontera: min-heap de (costo_acumulado, contador_desempate, nodo, camino)
-
-    Retorna:
-        ruta        : lista de (x, y) desde inicio hasta meta
-        explorados  : lista de (x, y) en orden de expansión
-        metricas    : dict con nodos_generados, nodos_expandidos, costo_total
     """
     inicio = laberinto.inicio
     meta   = laberinto.meta
 
     # (costo_g, contador, nodo, camino)
-    contador = 0  # desempate cuando dos nodos tienen igual costo
+    contador = 0  
     frontera = [(0, contador, inicio, [inicio])]
     heapq.heapify(frontera)
 
-    # Diccionario: nodo -> menor costo conocido para llegar a él
     costo_minimo = {inicio: 0}
 
     nodos_generados  = 1
@@ -148,7 +130,6 @@ def ucs(laberinto):
             }
             return camino, orden_exploracion, metricas
 
-        # Descartar si ya encontramos un camino más barato a este nodo
         if costo_g > costo_minimo.get(nodo_actual, float('inf')):
             continue
 
@@ -167,24 +148,31 @@ def ucs(laberinto):
                                     "costo_total": float('inf')}
 
 
-# Función auxiliar
-
+# Funciones auxiliares
 
 def _calcular_costo(laberinto, camino):
     """Suma el costo real de recorrer el camino dado."""
     costo = 0
-    for x, y in camino[1:]:   # el nodo inicio no tiene costo de entrada
+    for x, y in camino[1:]:   
         valor = laberinto.matriz[y][x]
-        costo += 10 if valor == '2' else 1
+        # Mantenemos las penalizaciones de los distintos terrenos
+        if valor == '3':
+            costo += 10
+        elif valor == '2':
+            costo += 10 # En teoría es muro ahora, pero se deja por seguridad
+        else:
+            costo += 1
     return costo
 
 
-def imprimir_metricas(nombre_algoritmo, metricas, tiene_solucion):
-    """Imprime en consola una tabla sencilla con los resultados."""
+def imprimir_metricas(nombre_algoritmo, metricas, tiene_solucion, tiempo_ms, longitud):
+    """Imprime en consola la tabla completa requerida por la rúbrica."""
     print(f"\n{'='*45}")
     print(f"  Algoritmo : {nombre_algoritmo}")
     print(f"  Solución  : {'SÍ' if tiene_solucion else 'NO'}")
     print(f"  Nodos generados  : {metricas['nodos_generados']}")
     print(f"  Nodos expandidos : {metricas['nodos_expandidos']}")
+    print(f"  Longitud camino  : {longitud} pasos")
     print(f"  Costo total      : {metricas['costo_total']}")
+    print(f"  Tiempo ejecución : {tiempo_ms:.2f} ms")
     print(f"{'='*45}")

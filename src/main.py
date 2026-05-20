@@ -1,6 +1,8 @@
 # src/main.py
 import pygame
 import sys
+import time # NUEVO: Para medir el tiempo de ejecución
+
 from laberinto import Laberinto
 from interfaz import Interfaz
 from busqueda_ciega import bfs, dfs, ucs, imprimir_metricas
@@ -52,6 +54,9 @@ def main():
                             if rect_alg.collidepoint(mouse_pos):
                                 app.dibujar() 
                                 
+                                # NUEVO: Iniciar el cronómetro
+                                inicio_tiempo = time.time()
+                                
                                 if nombre_alg == "BFS":
                                     ruta, explorados, metrica = bfs(mi_laberinto)
                                 elif nombre_alg == "DFS":
@@ -63,7 +68,25 @@ def main():
                                 elif nombre_alg == "A*":
                                     ruta, explorados, metrica = a_estrella(mi_laberinto)
                                 
-                                imprimir_metricas(nombre_alg, metrica, bool(ruta))
+                                # NUEVO: Detener el cronómetro y calcular milisegundos
+                                fin_tiempo = time.time()
+                                tiempo_ms = (fin_tiempo - inicio_tiempo) * 1000
+                                longitud_camino = len(ruta) if ruta else 0
+                                
+                                # Imprimir resultados actualizados
+                                imprimir_metricas(nombre_alg, metrica, bool(ruta), tiempo_ms, longitud_camino)
+                                
+                                # NUEVO: Guardar el orden de exploración en un TXT
+                                try:
+                                    with open("orden_expansion.txt", "w", encoding="utf-8") as f:
+                                        f.write(f"=== Registro de Expansión: {nombre_alg} ===\n")
+                                        f.write(f"Total de nodos expandidos: {len(explorados)}\n\n")
+                                        for i, nodo in enumerate(explorados):
+                                            f.write(f"Paso {i+1}: Coordenada {nodo}\n")
+                                    print(" [*] Archivo 'orden_expansion.txt' generado con éxito en la raíz del proyecto.")
+                                except Exception as e:
+                                    print(f" Error al crear el archivo txt: {e}")
+                                
                                 if ruta:
                                     app.dibujar_rastro(explorados, ruta)
 
