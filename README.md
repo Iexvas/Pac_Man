@@ -1,6 +1,10 @@
 # Proyecto IA 
 
 ## Integrantes
+1. Alegría Farinango
+2. Anndy Rengifo
+3. Lady Velasquez
+4. Alexis Vasco
 
 ## Manual de Instalación
 1. Clonar el repositorio.
